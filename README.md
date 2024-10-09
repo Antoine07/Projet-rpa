@@ -1,6 +1,6 @@
 # Proposition d'organisation
 
-## Structure du projet
+## Structure du projet backend avec FastAPI
 
 ```txt
 ├── app
