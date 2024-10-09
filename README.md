@@ -54,5 +54,72 @@ Le sous-dossier `app` contient les différents composants de l'application. Chaq
 #### 2. **Fichier `requirements.txt`**
 Ce fichier contient toutes les dépendances nécessaires au projet. Il facilite l'installation des packages requis en une seule commande, assurant que tous les développeurs travaillent avec les mêmes versions des bibliothèques.
 
-### Conclusion
-Cette structure favorise un développement propre et organisé. En séparant clairement les différents aspects de l'application, vous créez un code plus maintenable, évolutif et testable. Chaque module a une responsabilité précise, ce qui facilite les modifications futures et la collaboration au sein de l'équipe de développement.
+
+## Schéma des tables 
+
+### Modélisation
+
+- Schéma des tables 
+
+```mermaid
+erDiagram
+Role{
+    id int pk
+    name varchar
+}
+Permission{
+    id int pk
+    action varchar
+    description varchar
+}
+Role_Permission{
+    id int pk
+    role_id int fk
+    Permission_id int fk
+}
+User{
+    id int pk
+    email varchar
+    password varchar
+    firstname varchar
+    lastname varchar
+    role_id int fk
+}
+School{
+    id int pk
+    name varchar
+}
+Trainer{
+    id int pk
+    name varchar
+}
+Subject{
+    id int pk
+    name varchar
+}
+Invoice{
+    id int pk
+    invoice_number varchar
+    creation_date timestamp 
+    issue_date date
+    payment_due varchar
+    invoice_wording varchar
+    days_count int
+    hours_count int
+    unit_price float
+    tva float
+    amount_ht float
+    amount_ttc float
+    intervention_dates JSONB
+    student_count int
+    school_id int fk
+    trainer_id int fk
+    subject int fk
+}
+Role ||--o{ Role_Permission : "1,n"
+Permission ||--o{ Role_Permission : "1,n"
+Role ||--o{ User : "1,n"
+School ||--o{ Invoice : "1,n"
+Trainer ||--o{ Invoice : "1,n"
+Subject ||--o{ Invoice : "1,n"
+````
