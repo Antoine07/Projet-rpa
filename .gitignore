@@ -1,0 +1,46 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+
+# Environnement virtuel
+venv/
+.env
+.venv/
+ENV/
+env/
+env.bak/
+venv.bak/
+
+# Fichiers de configuration IDE
+.vscode/
+.idea/
+
+# Fichiers de log
+*.log
+
+# Dossiers de tests
+/tests/__pycache__/
+tests/*.py[cod]
+
+# Pytest cache
+.cache
+
+# Dossiers de compilations
+build/
+dist/
+*.egg-info/
+
+# Docker
+*.db
+docker-compose.override.yml
+
+# Autres fichiers de configuration
+*.sqlite3
+
+# Ignore les fichiers temporaires
+*.tmp
+*.temp
+
+db/data
