@@ -1,5 +1,5 @@
 from sqlalchemy.orm import Session
-from app.features.repositories.invoice_repository import InvoiceRepository
+from app.features.invoice_repository import InvoiceRepository
 from app.domain.invoice_model import Invoice  # Importez le modèle SQLAlchemy
 
 class InvoiceService:

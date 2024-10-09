@@ -22,7 +22,7 @@ async def startup():
 
 @app.get("/")
 async def root():
-    return {"message": "Welcome to the Invoice API"}
+    return {"message": "Welcome to the Invoice API !"}
 
 # Inclure les routes de l'API
 app.include_router(api_router, prefix="/api", tags=["invoices"])
