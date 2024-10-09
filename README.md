@@ -63,63 +63,66 @@ Ce fichier contient toutes les dépendances nécessaires au projet. Il facilite 
 
 ```mermaid
 erDiagram
-Role{
-    id int pk
-    name varchar
-}
-Permission{
-    id int pk
-    action varchar
-    description varchar
-}
-Role_Permission{
-    id int pk
-    role_id int fk
-    Permission_id int fk
-}
-User{
-    id int pk
-    email varchar
-    password varchar
-    firstname varchar
-    lastname varchar
-    role_id int fk
-}
-School{
-    id int pk
-    name varchar
-}
-Trainer{
-    id int pk
-    name varchar
-}
-Subject{
-    id int pk
-    name varchar
-}
-Invoice{
-    id int pk
-    invoice_number varchar
-    creation_date timestamp 
-    issue_date date
-    payment_due varchar
-    invoice_wording varchar
-    days_count int
-    hours_count int
-    unit_price float
-    tva float
-    amount_ht float
-    amount_ttc float
-    intervention_dates JSONB
-    student_count int
-    school_id int fk
-    trainer_id int fk
-    subject int fk
-}
-Role ||--o{ Role_Permission : "1,n"
-Permission ||--o{ Role_Permission : "1,n"
-Role ||--o{ User : "1,n"
-School ||--o{ Invoice : "1,n"
-Trainer ||--o{ Invoice : "1,n"
-Subject ||--o{ Invoice : "1,n"
+    SCHOOLS {
+        INT id PK
+        VARCHAR name
+    }
+    
+    STUDENTS {
+        INT id PK
+        VARCHAR name
+        VARCHAR email
+        INT school_id FK
+    }
+
+    TRAINERS {
+        INT id PK
+        VARCHAR name
+        VARCHAR email
+    }
+
+    SUBJECTS {
+        INT id PK
+        VARCHAR name
+    }
+
+    COURSES {
+        INT id PK
+        INT subject_id FK
+        INT student_id FK
+        DATE date
+        INT hours_count
+        INT school_id FK
+    }
+
+    INVOICES {
+        INT id PK
+        VARCHAR invoice_number
+        TIMESTAMP creation_date
+        VARCHAR payment_due
+        VARCHAR invoice_wording
+        INT days_count
+        INT hours_count
+        FLOAT unit_price
+        FLOAT tva
+        FLOAT amount_ht
+        FLOAT amount_ttc
+        JSONB intervention_dates
+        INT student_count
+        INT school_id FK
+        INT trainer_id FK
+        INT subject_id FK
+    }
+
+    SCHOOLS ||--o{ STUDENTS: ""
+    SCHOOLS ||--o{ COURSES: ""
+    SCHOOLS ||--o{ INVOICES: ""
+
+    STUDENTS ||--o{ COURSES: ""
+    STUDENTS ||--o{ INVOICES: ""
+
+    TRAINERS ||--o{ INVOICES: ""
+
+    SUBJECTS ||--o{ COURSES: ""
+    SUBJECTS ||--o{ INVOICES: ""
 ````
