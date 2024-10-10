@@ -63,66 +63,92 @@ Ce fichier contient toutes les dépendances nécessaires au projet. Il facilite 
 
 ```mermaid
 erDiagram
-    SCHOOLS {
-        INT id PK
-        VARCHAR name
-    }
-    
-    STUDENTS {
-        INT id PK
-        VARCHAR name
-        VARCHAR email
-        INT school_id FK
+
+    COURSES {
+        int id PK
+        varchar name
     }
 
     TRAINERS {
-        INT id PK
-        VARCHAR name
-        VARCHAR email
+        int id PK
+        varchar name
+        varchar shortcode
     }
 
-    SUBJECTS {
-        INT id PK
-        VARCHAR name
+    STUDENTS {
+        int id PK
+        varchar name
+        varchar email
+        int school_id
     }
 
-    COURSES {
-        INT id PK
-        INT subject_id FK
-        INT student_id FK
-        DATE date
-        INT hours_count
-        INT school_id FK
+    SCHOOLS {
+        int id PK
+        varchar name
     }
 
     INVOICES {
-        INT id PK
-        VARCHAR invoice_number
-        TIMESTAMP creation_date
-        VARCHAR payment_due
-        VARCHAR invoice_wording
-        INT days_count
-        INT hours_count
-        FLOAT unit_price
-        FLOAT tva
-        FLOAT amount_ht
-        FLOAT amount_ttc
-        JSONB intervention_dates
-        INT student_count
-        INT school_id FK
-        INT trainer_id FK
-        INT subject_id FK
+        int id PK
+        varchar invoice_number
+        timestamp creation_date
+        varchar payment_due
+        varchar invoice_wording
+        int days_count
+        int hours_count
+        numeric unit_price
+        numeric tva
+        numeric amount_ht
+        numeric amount_ttc
+        json intervention_dates
+        int student_count
+        int school_id
+        int trainer_id
+        int course_id
     }
 
-    SCHOOLS ||--o{ STUDENTS: ""
-    SCHOOLS ||--o{ COURSES: ""
-    SCHOOLS ||--o{ INVOICES: ""
+    COURSE_TRAINERS {
+        int course_id PK
+        int trainer_id PK
+    }
 
-    STUDENTS ||--o{ COURSES: ""
-    STUDENTS ||--o{ INVOICES: ""
+    STUDENT_COURSES {
+        int student_id PK
+        int course_id PK
+    }
 
-    TRAINERS ||--o{ INVOICES: ""
+    TRAINER_SCHOOLS {
+        int trainer_id PK
+        int school_id PK
+    }
 
-    SUBJECTS ||--o{ COURSES: ""
-    SUBJECTS ||--o{ INVOICES: ""
-````
+    COURSES ||--o{ COURSE_TRAINERS : "has"
+    TRAINERS ||--o{ COURSE_TRAINERS : "has"
+    TRAINERS ||--o{ TRAINER_SCHOOLS : "attends"
+    SCHOOLS ||--o{ TRAINER_SCHOOLS : "has"
+    STUDENTS ||--o{ STUDENT_COURSES : "attends"
+    COURSES ||--o{ STUDENT_COURSES : "has"
+    INVOICES }o--|| COURSES : "belongs to"
+    INVOICES }o--|| TRAINERS : "issued by"
+    INVOICES }o--|| SCHOOLS : "issued for"
+    STUDENTS }o--|| SCHOOLS : "attends"
+
+
+```
+
+
+1. **Un cours** peut être enseigné par **plusieurs formateurs**, et **un formateur** peut enseigner **plusieurs cours**.
+   - Relation : Cours ↔ Formateurs (N:N)
+
+2. **Un étudiant** peut s'inscrire à **plusieurs cours**, et **un cours** peut avoir **plusieurs étudiants** inscrits.
+   - Relation : Étudiants ↔ Cours (N:N)
+
+3. **Une école** peut avoir **plusieurs étudiants**, mais **un étudiant** est inscrit dans **une seule école**.
+   - Relation : École ↔ Étudiants (1:N)
+
+4. **Une école** peut employer **plusieurs formateurs**, et **un formateur** peut travailler dans **plusieurs écoles**.
+   - Relation : Écoles ↔ Formateurs (N:N)
+
+5. **Une facture** est liée à **un cours**, **un formateur**, et **une école**. 
+   - Relation : Facture ↔ Cours, Formateur, École (1:1:1)
+
+Ces phrases simples décrivent les relations principales entre les entités dans votre modèle de données.

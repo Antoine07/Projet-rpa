@@ -10,3 +10,11 @@ class InvoiceService:
         invoices = self.invoice_repository.get_all_invoices()
         
         return [invoice for invoice in invoices]
+
+    def get_invoice_details(self) ->list[Invoice]:
+        
+        return self.invoice_repository.get_invoice_details()
+    
+    def create_newinvoice(self, invoice_data: dict):
+        
+         return self.invoice_repository.create_invoice()

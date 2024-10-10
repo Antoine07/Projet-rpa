@@ -3,6 +3,13 @@ from fastapi.middleware.cors import CORSMiddleware
 from app.features.api import router as api_router
 from app.infrastructure.database import SessionLocal, engine, Base
 
+from app.domain.base_model import course_trainers, student_course, trainer_schools
+from app.domain.invoice_model import Invoice
+from app.domain.school_model import School
+from app.domain.student_model import Student
+from app.domain.trainer_model import Trainer
+from app.domain.course_model import Course
+
 app = FastAPI(title="Invoice API")
 
 # Configurer CORS si nécessaire
