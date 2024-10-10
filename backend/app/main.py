@@ -15,7 +15,7 @@ app = FastAPI(title="Invoice API")
 # Configurer CORS si nécessaire
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # Remplacez par les origines autorisées
+    allow_origins=["http://localhost:5174"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

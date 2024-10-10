@@ -1,0 +1,61 @@
+/* Styles de base pour le layout principal */
+.main-layout {
+    font-family: Arial, sans-serif;
+    padding: 20px;
+  }
+  
+  /* Styles pour le menu de navigation */
+  nav {
+    background-color: #333;
+    padding: 10px;
+  }
+  
+  /* Liste du menu principale */
+  .main-menu {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: space-around;
+  }
+  
+  /* Styles pour les éléments du menu */
+  .main-menu li {
+    display: inline;
+  }
+  
+  /* Liens du menu */
+  .main-menu a {
+    color: white;
+    text-decoration: none;
+    padding: 10px 20px;
+    display: inline-block;
+    transition: background-color 0.3s ease;
+  }
+  
+  /* Effet au survol des liens */
+  .main-menu a:hover {
+    background-color: #575757;
+    border-radius: 5px;
+  }
+  
+  /* Ligne horizontale pour séparer le menu du contenu */
+  hr {
+    margin-top: 20px;
+    border: 0;
+    border-top: 2px solid #ddd;
+  }
+  
+  /* Styles pour les petites résolutions */
+  @media (max-width: 768px) {
+    .main-menu {
+      flex-direction: column;
+      align-items: center;
+    }
+  
+    .main-menu a {
+      margin: 5px 0;
+      padding: 10px 40px;
+    }
+  }
+  

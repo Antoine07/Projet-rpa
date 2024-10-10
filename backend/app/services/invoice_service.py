@@ -1,6 +1,6 @@
 from sqlalchemy.orm import Session
 from app.features.invoice_repository import InvoiceRepository
-from app.domain.invoice_model import Invoice  # Importez le modèle SQLAlchemy
+from app.domain.invoice_model import Invoice  
 
 class InvoiceService:
     def __init__(self, db: Session):
@@ -11,7 +11,7 @@ class InvoiceService:
         
         return [invoice for invoice in invoices]
 
-    def get_invoice_details(self) ->list[Invoice]:
+    def get_invoice_details(self):
         
         return self.invoice_repository.get_invoice_details()
     

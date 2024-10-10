@@ -152,3 +152,177 @@ erDiagram
    - Relation : Facture ↔ Cours, Formateur, École (1:1:1)
 
 Ces phrases simples décrivent les relations principales entre les entités dans votre modèle de données.
+
+## La clean Architecture
+
+Dans le cadre d'une architecture Clean, il est courant d'organiser votre code en plusieurs couches distinctes pour maintenir la séparation des préoccupations. Voici comment vous pourriez structurer les différents composants de votre application :
+
+### Structure des Dossiers
+
+1. **Domaine (Domain)** :
+   - Contient la logique métier et les règles.
+   - Inclut des entités, des valeurs d'objet, et des interfaces (repositories, services).
+   - **Exemples** :
+     - `entities/` : définitions des modèles comme `Invoice`, `Trainer`, `School`, etc.
+     - `repositories/` : interfaces pour l'accès aux données.
+     - `services/` : logique métier qui interagit avec les repositories.
+
+2. **Application (Application)** :
+   - Contient les cas d'utilisation (Use Cases) qui orchestrent l'interaction entre le domaine et les couches externes.
+   - **Exemples** :
+     - `use_cases/` : classes qui implémentent la logique des cas d'utilisation.
+
+3. **Infrastructure (Infrastructure)** :
+   - Gère la communication avec des systèmes externes comme des bases de données, des API, etc.
+   - Peut inclure des implémentations concrètes des repositories définis dans le domaine.
+   - **Exemples** :
+     - `database/` : configurations de base de données, migrations, etc.
+     - `repositories/` : implémentations concrètes des interfaces de repository.
+
+4. **Interface (Interface)** :
+   - Gère l'interaction avec les utilisateurs ou d'autres systèmes.
+   - Inclut les contrôleurs FastAPI, les modèles de réponse, etc.
+   - **Exemples** :
+     - `controllers/` : définitions des routes et des points d'entrée de l'API.
+     - `schemas/` : définitions de modèles pour la validation et la sérialisation des données (p. ex., avec Pydantic).
+
+### Répartition des Services
+
+- **Services du Domaine** : Si vos services contiennent principalement la logique métier et interagissent avec les entités, ils devraient être placés dans le dossier **Domaine**. Ils peuvent également être appelés par les cas d'utilisation.
+
+- **Services d'Infrastructure** : Si vos services sont liés à des interactions externes (comme l'envoi d'e-mails, les appels API externes, etc.), ils devraient être placés dans le dossier **Infrastructure**.
+
+### Exemple de Structure
+
+```
+/app
+|-- /domain
+|   |-- /entities
+|   |   |-- invoice.py
+|   |   |-- trainer.py
+|   |   |-- school.py
+|   |-- /repositories
+|   |   |-- invoice_repository.py
+|   |   |-- trainer_repository.py
+|   |-- /services
+|       |-- invoice_service.py
+|-- /application
+|   |-- /use_cases
+|       |-- create_invoice.py
+|-- /infrastructure
+|   |-- /database
+|   |-- /repositories
+|       |-- sql_invoice_repository.py
+|-- /interface
+|   |-- /controllers
+|       |-- invoice_controller.py
+|   |-- /schemas
+|       |-- invoice_schema.py
+```
+
+## Exemples Application
+
+Voici un exemple détaillé de la façon dont vous pourriez structurer les cas d'utilisation dans la couche **Application** de votre architecture Clean, en particulier avec des fichiers et des classes qui correspondent à des cas d'utilisation spécifiques.
+
+### Exemple de Cas d'Utilisation
+
+Imaginons que vous ayez un cas d'utilisation pour **Créer une Facture** et un autre pour **Obtenir les Formateurs par École**. Voici comment cela pourrait être organisé :
+
+#### Structure des Dossiers
+
+```
+/app
+|-- /application
+|   |-- /use_cases
+|   |   |-- create_invoice.py
+|   |   |-- get_trainers_by_school.py
+```
+
+### 1. `create_invoice.py`
+
+Voici un exemple de la classe `CreateInvoice` qui gère la création d'une facture.
+
+```python
+# /app/application/use_cases/create_invoice.py
+
+from app.domain.entities.invoice import Invoice
+from app.domain.repositories.invoice_repository import InvoiceRepository
+from app.domain.repositories.trainer_repository import TrainerRepository
+
+class CreateInvoice:
+    def __init__(self, invoice_repository: InvoiceRepository, trainer_repository: TrainerRepository):
+        self.invoice_repository = invoice_repository
+        self.trainer_repository = trainer_repository
+
+    def execute(self, invoice_data):
+        # Logique de création de facture
+        invoice = Invoice(**invoice_data)  # Création de l'objet Invoice
+        self.invoice_repository.save(invoice)  # Sauvegarde dans le dépôt
+        return invoice
+```
+
+### 2. `get_trainers_by_school.py`
+
+Voici un exemple de la classe `GetTrainersBySchool` qui récupère les formateurs par école.
+
+```python
+# /app/application/use_cases/get_trainers_by_school.py
+
+from typing import List
+from app.domain.repositories.trainer_repository import TrainerRepository
+
+class GetTrainersBySchool:
+    def __init__(self, trainer_repository: TrainerRepository):
+        self.trainer_repository = trainer_repository
+
+    def execute(self, school_id: int) -> List[dict]:
+        # Logique pour obtenir les formateurs par école
+        trainers = self.trainer_repository.get_trainers_per_school(school_id)
+        return trainers
+```
+
+### Explication des Composants
+
+1. **Dépendances** :
+   - Chaque cas d'utilisation prend en paramètres les repositories nécessaires, ce qui permet de respecter le principe de l'inversion des dépendances.
+
+2. **Logique Métier** :
+   - La logique métier est encapsulée dans la méthode `execute`, ce qui rend les cas d'utilisation facilement testables et réutilisables.
+
+3. **Retour de Données** :
+   - Les méthodes renvoient les résultats au format approprié (par exemple, une instance de `Invoice` ou une liste de dictionnaires pour les formateurs).
+
+### Utilisation dans un Contrôleur
+
+Pour connecter ces cas d'utilisation à une interface (par exemple, une API FastAPI), vous pouvez les appeler depuis vos contrôleurs :
+
+```python
+# /app/interface/controllers/invoice_controller.py
+
+from fastapi import APIRouter, HTTPException
+from app.application.use_cases.create_invoice import CreateInvoice
+from app.application.use_cases.get_trainers_by_school import GetTrainersBySchool
+
+router = APIRouter()
+
+@router.post("/invoices")
+def create_invoice(invoice_data: dict):
+    use_case = CreateInvoice(invoice_repository, trainer_repository)
+    return use_case.execute(invoice_data)
+
+@router.get("/schools/{school_id}/trainers")
+def get_trainers_by_school(school_id: int):
+    use_case = GetTrainersBySchool(trainer_repository)
+    trainers = use_case.execute(school_id)
+    if not trainers:
+        raise HTTPException(status_code=404, detail="No trainers found for this school")
+    return trainers
+```
+
+### Conclusion
+
+Cette structure permet de garder votre code bien organisé et de séparer clairement la logique métier des détails d'implémentation, facilitant ainsi la maintenance et les tests. Chaque cas d'utilisation a une responsabilité spécifique, ce qui le rend facile à comprendre et à modifier.
+
+### Conclusion
+
+En résumé, les services peuvent être inclus dans le domaine si leur rôle est de gérer la logique métier. Si vous avez des services liés à des interactions externes, il est préférable de les placer dans l'infrastructure. Cela permet de garder votre code bien organisé et facile à maintenir.

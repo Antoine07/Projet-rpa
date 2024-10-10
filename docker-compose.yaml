@@ -38,6 +38,21 @@ services:
     networks:
       - app-network-api
 
+  frontend:
+    build:
+      context: ./frontend  # Répertoire où se trouve votre code React
+      dockerfile: Dockerfile  # Assurez-vous d'avoir un Dockerfile dans le répertoire frontend
+    container_name: app-react
+    volumes:
+      - ${PWD}/frontend:/usr/src/app  # Monté pour le développement
+    ports:
+      - 5174:5174  # Port exposé pour le frontend
+    networks:
+      - app-network-api
+    # tty: true  # Permet d'avoir un terminal interactif
+    # command: ["tail", "-f", "/dev/null"]  # Garde le conteneur en vie
+    command: ["npm", "run", "dev"]  # Démarrer le serveur React en mode dev
+
 volumes:
   data:
 

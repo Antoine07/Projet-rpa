@@ -1,6 +1,7 @@
 from sqlalchemy.orm import Session
 from app.domain.invoice_model import Invoice
 from app.schemas.invoice_schema import InvoiceCreate
+from sqlalchemy import func
 
 class InvoiceRepository:
     def __init__(self, db: Session):
@@ -10,7 +11,27 @@ class InvoiceRepository:
         return self.db.query(Invoice).all()
 
     def get_invoice_details(self):
-        return self.db.query(Invoice).join(Invoice.school).join(Invoice.trainer).join(Invoice.course).all()
+        invoices = self.db.query(Invoice).join(Invoice.school).join(Invoice.trainer).join(Invoice.course).all()
+        
+        results = []
+        for invoice in invoices:
+            results.append({
+                "invoice_number": invoice.invoice_number,
+                "creation_date": invoice.creation_date.isoformat(),
+                "invoice_wording": invoice.invoice_wording,
+                "days_count": invoice.days_count,
+                "hours_count": invoice.hours_count,
+                "unit_price": invoice.unit_price,
+                "tva": invoice.tva,
+                "amount_ht": invoice.amount_ht,
+                "amount_ttc": invoice.amount_ttc,
+                "intervention_dates": invoice.intervention_dates,
+                "student_count": invoice.student_count,
+                "school_name": invoice.school.name, 
+                "course_name": invoice.course.name,  
+        })
+            
+        return results
 
     def create_invoice(db: Session, invoice: InvoiceCreate):
         course = db.query(Course).filter(Course.id == invoice.course_id).first()
@@ -41,3 +62,9 @@ class InvoiceRepository:
         db.commit()
         db.refresh(db_invoice)
         return db_invoice
+
+    def get_amountInvoice(self):
+        return self.db.query(func.sum(Invoice.amount_ttc)).scalar() or 0
+    
+    def get_totalStudentInvoice(self):
+         return self.db.query(func.sum(Invoice.student_count)).scalar() or 0
