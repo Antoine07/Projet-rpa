@@ -322,7 +322,3 @@ def get_trainers_by_school(school_id: int):
 ### Conclusion
 
 Cette structure permet de garder votre code bien organisé et de séparer clairement la logique métier des détails d'implémentation, facilitant ainsi la maintenance et les tests. Chaque cas d'utilisation a une responsabilité spécifique, ce qui le rend facile à comprendre et à modifier.
-
-### Conclusion
-
-En résumé, les services peuvent être inclus dans le domaine si leur rôle est de gérer la logique métier. Si vous avez des services liés à des interactions externes, il est préférable de les placer dans l'infrastructure. Cela permet de garder votre code bien organisé et facile à maintenir.
